@@ -2099,7 +2099,30 @@ export default function App() {
           />
         );
       default:
-        return null;
+        return (
+          <HomeView 
+            userName={state.user.name}
+            gender={state.user.gender}
+            level={state.user.level}
+            tasks={state.user.tasks}
+            userChallenges={state.user.userChallenges}
+            journalEntries={state.user.journalEntries}
+            moodLogs={state.user.moodLogs}
+            bookings={state.user.bookings}
+            onToggleTask={handleToggleTask}
+            onStartFocus={handleStartFocus}
+            onDeleteTask={handleDeleteTask}
+            onReorderTasks={handleReorderTasks}
+            onAddTask={handleOpenAddTask}
+            totalPoints={state.user.sabrPoints}
+            totalWords={state.user.totalWordCount}
+            totalWins={state.user.totalWins}
+            onSelectMood={handleSelectMood}
+            onViewChange={handleViewChange}
+            growthScore={state.user.growthScore}
+            streak={state.user.streak}
+          />
+        );
     }
   };
 
@@ -2116,7 +2139,7 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen max-w-md mx-auto bg-bg text-text relative overflow-hidden flex flex-col antialiased transition-colors duration-500">
+    <div className="w-screen h-screen max-w-md mx-auto bg-bg text-text relative overflow-hidden flex flex-col antialiased transition-colors duration-500">
       {state.view !== 'sanctuary' && !state.user.selectedResource && (
         <Header 
           theme={state.theme} 
