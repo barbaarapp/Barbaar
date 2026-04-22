@@ -1,0 +1,2 @@
+/api/*  https://your-cloud-run-url.a.run.app/api/:splat  200
+/*      /index.html  200
