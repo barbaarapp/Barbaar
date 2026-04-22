@@ -52,7 +52,6 @@ const INITIAL_STATE: AppState = {
     nextLevelExp: 500,
     streak: 0,
     journalStreak: 0,
-    moodStreak: 0,
     points: 0,
     sabrPoints: 0,
     growthScore: 0,
