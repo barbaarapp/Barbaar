@@ -1,0 +1,37 @@
+{
+  "name": "Barbaar",
+  "short_name": "Barbaar",
+  "description": "Your companion for self-growth, community accountability, and mental wellness.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F9F9F9",
+  "theme_color": "#76B06E",
+  "orientation": "portrait",
+  "categories": ["health", "lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "/barbaar-icon.svg",
+      "sizes": "48x48 72x72 96x96 128x128 144x144 152x152 192x192 384x384 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/barbaar-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Focus Mode",
+      "url": "/?view=focus",
+      "icons": [{ "src": "/barbaar-icon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Challenges",
+      "url": "/?view=challenges",
+      "icons": [{ "src": "/barbaar-icon.svg", "sizes": "192x192" }]
+    }
+  ]
+}
