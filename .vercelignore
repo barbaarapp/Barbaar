@@ -1,0 +1,12 @@
+.git
+.gitignore
+README.md
+BUGFIX.md
+DEPLOYMENT.md
+WHITESCREENFIX-SUMMARY.md
+.env.local
+.env
+node_modules
+.vercel
+dist
+.DS_Store
