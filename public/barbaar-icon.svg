@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="120" fill="#F4F1E9"/>
+  <!-- Barbaar Heart-Leaf B Logo -->
+  <path 
+    d="M230 420C140 420 80 340 80 250C80 160 140 80 230 80C300 80 360 130 380 200C383 210 380 220 370 220H300C290 220 285 210 280 200C260 140 200 140 200 140C200 140 160 180 160 250C160 320 200 360 230 360C260 360 320 340 340 280C343 270 350 265 360 265H430C440 265 445 275 442 284C420 370 330 420 230 420Z" 
+    fill="#649B61" 
+  />
+  <path 
+    d="M230 140C230 140 280 140 310 180C315 185 315 195 310 200L250 260C240 270 220 260 220 240L220 150C220 145 225 140 230 140Z" 
+    fill="#649B61" 
+  />
+  <!-- Registered Trademark Sync -->
+  <circle cx="430" cy="90" r="22" stroke="#649B61" strokeWidth="4" />
+  <text x="430" y="96" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="20" fill="#649B61">R</text>
+</svg>

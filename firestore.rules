@@ -1,0 +1,219 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // Global Helpers
+    // ===============================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      // Identity-Based Admin Check
+      return isVerified() && (
+        request.auth.token.email == "qaalidibrahim.996@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ===============================================================
+    // Validation Blueprints
+    // ===============================================================
+
+    function isValidProfile(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             (!('avatar_url' in data) || (data.avatar_url is string && data.avatar_url.size() < 1000)) &&
+             (!('level' in data) || data.level is int || data.level is number) &&
+             (!('experience' in data) || data.experience is int || data.experience is number) &&
+             (!('points' in data) || data.points is int || data.points is number) &&
+             (!('sabr_points' in data) || data.sabr_points is int || data.sabr_points is number) &&
+             (!('language' in data) || data.language in ['en', 'so']) &&
+             (!('updated_at' in data) || data.updated_at == request.time);
+    }
+
+    function isValidTask(data) {
+      return data.user_id == request.auth.uid &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 500 &&
+             (!('completed' in data) || data.completed is bool) &&
+             (!('priority' in data) || data.priority in ['low', 'medium', 'high']) &&
+             (request.method == 'create' ? data.created_at == request.time : data.created_at == existing().created_at);
+    }
+
+    function isValidJournalEntry(data) {
+      return data.user_id == request.auth.uid &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 10000 &&
+             data.date is string && data.date.size() < 100 &&
+             (request.method == 'create' ? data.created_at == request.time : data.created_at == existing().created_at);
+    }
+
+    function isValidMoodLog(data) {
+      return data.user_id == request.auth.uid &&
+             data.date is string && data.date.size() < 100 &&
+             data.mood in ['very-sad', 'sad', 'neutral', 'happy', 'very-happy'] &&
+             (request.method == 'create' ? data.created_at == request.time : data.created_at == existing().created_at);
+    }
+
+    function isValidBooking(data) {
+      return data.userId == request.auth.uid &&
+             data.status in ['pending', 'confirmed', 'cancelled'] &&
+             data.evcNumber is string && data.evcNumber.size() < 50 &&
+             data.therapistId is string &&
+             (request.method == 'create' ? data.createdAt == request.time : data.createdAt == existing().createdAt);
+    }
+
+    function isValidUserChallenge(data) {
+      return data.user_id == request.auth.uid &&
+             data.challengeId is string &&
+             data.status in ['active', 'completed', 'failed'] &&
+             (!('currentDay' in data) || data.currentDay is int) &&
+             (!('streak' in data) || data.streak is int);
+    }
+
+    function isValidChatMessage(data) {
+      return data.room_id is string &&
+             data.user_id is string &&
+             data.sender_id is string &&
+             data.sender_type in ['user', 'team'] &&
+             data.text is string && data.text.size() > 0 && data.text.size() < 5000 &&
+             data.created_at == request.time;
+    }
+
+    // ===============================================================
+    // Master Match Blocks
+    // ===============================================================
+
+    match /profiles/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && isValidProfile(incoming()) && 
+                      (!('id' in incoming()) || incoming().id == userId);
+      allow update: if isAdmin() || (
+        isOwner(userId) && 
+        isValidProfile(incoming()) && 
+        (!('id' in incoming()) || incoming().id == existing().id || incoming().id == userId) &&
+        !('role' in incoming()) // Forbid role escalation
+      );
+    }
+
+    match /tasks/{taskId} {
+      allow get: if isSignedIn() && (existing().user_id == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isValidId(taskId) && isValidTask(incoming());
+      allow update: if isOwner(existing().user_id) && isValidTask(incoming()) && incoming().user_id == existing().user_id;
+      allow delete: if isOwner(existing().user_id) || isAdmin();
+    }
+
+    match /journal_entries/{entryId} {
+      allow get: if isSignedIn() && (existing().user_id == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isValidId(entryId) && isValidJournalEntry(incoming());
+      allow update: if isOwner(existing().user_id) && isValidJournalEntry(incoming()) && incoming().user_id == existing().user_id;
+      allow delete: if isOwner(existing().user_id) || isAdmin();
+    }
+
+    match /mood_logs/{logId} {
+      allow get: if isSignedIn() && (existing().user_id == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isValidId(logId) && isValidMoodLog(incoming());
+      allow update: if isOwner(existing().user_id) && isValidMoodLog(incoming()) && incoming().user_id == existing().user_id;
+      allow delete: if isOwner(existing().user_id) || isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(bookingId) && isValidBooking(incoming());
+      allow update: if isAdmin() || (isOwner(existing().userId) && isValidBooking(incoming()) && incoming().userId == existing().userId);
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow get: if isSignedIn() && (existing().user_id == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isAdmin();
+      allow update: if isOwner(existing().user_id) && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['read']) &&
+                      incoming().read == true;
+      allow delete: if isOwner(existing().user_id) || isAdmin();
+    }
+
+    match /resources/{resourceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /therapists/{therapistId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /nasasho/{nasashoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /challenges/{challengeId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (resource.data.published == true || resource.data.createdBy == request.auth.uid || isAdmin());
+      allow create: if isAdmin() || (isSignedIn() && (!('published' in incoming()) || incoming().published == false));
+      allow update: if isAdmin() || (isOwner(existing().createdBy) && !('published' in incoming() && incoming().published == true));
+      allow delete: if isAdmin() || isOwner(existing().createdBy);
+    }
+
+    match /user_challenges/{userChallengeId} {
+      allow get: if isOwner(existing().user_id) || isAdmin();
+      allow list: if isSignedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isValidId(userChallengeId) && isValidUserChallenge(incoming());
+      allow update: if isOwner(existing().user_id) && isValidUserChallenge(incoming()) && incoming().user_id == existing().user_id;
+      allow delete: if isOwner(existing().user_id) || isAdmin();
+    }
+
+    match /chat_rooms/{roomId} {
+      allow get: if isOwner(existing().user_id) || isAdmin();
+      allow list: if isAdmin() || (isSignedIn() && resource.data.user_id == request.auth.uid);
+      allow create: if isValidId(roomId) && incoming().user_id == request.auth.uid;
+      allow update: if isAdmin() || (isOwner(existing().user_id) && incoming().status == 'closed');
+    }
+
+    match /chat_messages/{messageId} {
+      allow list: if isAdmin() || (isSignedIn() && resource.data.user_id == request.auth.uid);
+      allow create: if isValidId(messageId) && 
+                      isValidChatMessage(incoming()) && (
+                        (incoming().sender_type == 'user' && incoming().sender_id == request.auth.uid && incoming().user_id == request.auth.uid) ||
+                        (incoming().sender_type == 'team' && isAdmin())
+                      );
+    }
+
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false; // Managed via GCP console or restricted service account
+    }
+  }
+}
