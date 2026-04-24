@@ -10,22 +10,34 @@ export default defineConfig(({mode}) => {
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.VITE_APP_URL': JSON.stringify(env.VITE_APP_URL || 'https://barbaar-phi.vercel.app'),
+      global: 'globalThis',
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: 'globalThis',
+        },
+      },
+      include: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/database', 'firebase/storage', 'firebase/messaging'],
+    },
     build: {
       outDir: 'dist',
       sourcemap: false,
       minify: 'terser',
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
       rollupOptions: {
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
             'ui-vendor': ['lucide-react', 'motion/react'],
-            'firebase-vendor': ['firebase'],
+            'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           },
         },
       },
