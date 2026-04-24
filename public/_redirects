@@ -1,0 +1,20 @@
+# Exclude static assets from redirect
+/assets/*   200
+/manifest.json   200
+/sw.js   200
+*.svg   200
+*.png   200
+*.jpg   200
+*.jpeg   200
+*.gif   200
+*.webp   200
+*.css   200
+*.js   200
+*.json   200
+*.woff   200
+*.woff2   200
+*.ttf   200
+*.eot   200
+
+# SPA fallback for React - catch-all for HTML routes
+/*    /index.html   200

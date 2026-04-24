@@ -1,0 +1,10 @@
+[
+  {
+    "source": "/api/(.*)",
+    "destination": "https://your-cloud-run-url.a.run.app/api/$1"
+  },
+  {
+    "source": "/(.*)",
+    "destination": "/index.html"
+  }
+]
