@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "barbaar",
+  "type": "javascript",
+  "compatibility_date": "2026-04-24",
+  "compatibility_flags": ["nodejs_compat"],
+  
+  // Configure for Cloudflare Pages - static site with SPA
+  "build": {
+    "command": "npm run build",
+    "cwd": "./",
+    "watch_paths": ["src/**/*.{ts,tsx,js,jsx}"]
+  },
+  
+  "env": {
+    "production": {
+      "routes": []
+    }
+  },
+  
+  // Required for Cloudflare Pages static site deployment
+  "observability": {
+    "enabled": true
+  }
+}
