@@ -17,6 +17,9 @@ export default defineConfig(({mode}) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    ssr: {
+      noExternal: ['firebase'],
+    },
     optimizeDeps: {
       esbuildOptions: {
         define: {
@@ -24,6 +27,7 @@ export default defineConfig(({mode}) => {
         },
       },
       include: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/database', 'firebase/storage', 'firebase/messaging'],
+      exclude: ['firebase'],
     },
     build: {
       outDir: 'dist',
@@ -31,8 +35,10 @@ export default defineConfig(({mode}) => {
       minify: 'terser',
       commonjsOptions: {
         transformMixedEsModules: true,
+        ignoreDynamicRequires: true,
       },
       rollupOptions: {
+        external: [],
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
