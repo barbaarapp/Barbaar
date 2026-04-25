@@ -23,6 +23,17 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: {
         transformMixedEsModules: true,
       },
+      // Cloudflare Pages: Only output static files to dist/
+      outDir: 'dist',
+      emptyOutDir: true,
+      sourcemap: false,
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+        },
+        // Exclude server-side dependencies from bundle
+        external: ['express', 'nodemailer', 'cors'],
+      },
     },
     resolve: {
       alias: {

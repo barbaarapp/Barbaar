@@ -1,0 +1,32 @@
+{
+  "pages_build_config": {
+    "build_command": "npm run build",
+    "build_output_dir": "dist",
+    "root_dir": "/",
+    "compatible_flags": ["nodejs_compat"],
+    "env": {
+      "production": {}
+    }
+  },
+  "exclude_from_upload": [
+    "node_modules",
+    ".git",
+    ".env*",
+    "server.ts",
+    "*.log",
+    "coverage",
+    ".DS_Store",
+    "src/",
+    "*.md",
+    "public/",
+    ".gitignore",
+    ".vercelignore",
+    "*.config.js",
+    "*.config.ts",
+    "tsconfig.json",
+    "package.json",
+    "package-lock.json",
+    "wrangler.toml",
+    "wrangler.json"
+  ]
+}
