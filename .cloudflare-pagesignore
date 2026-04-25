@@ -1,33 +1,60 @@
+# Ignore all non-static files for Cloudflare Pages
+
+# Git
 .git
 .gitignore
+.github/
+
+# Environment
 .env
 .env.*
+!.env.example
+
+# Documentation
 README.md
 *.md
-BUGFIX.md
-DEPLOYMENT.md
-WHITESCREENFIX-SUMMARY.md
+
+# Node
 node_modules
-.vercel
-.vercelignore
-.DS_Store
-*.log
+package.json
+package-lock.json
 npm-debug.log*
+*.log
+
+# Source Code (TypeScript)
 src/
-server.ts
+*.ts
+*.tsx
+!dist/**
+
+# Config files
 tsconfig.json
 vite.config.ts
 *.config.js
 *.config.ts
-package.json
-package-lock.json
+eslint.config.js
 .eslintrc.*
 tailwind.config.js
+
+# Build config
 wrangler.toml
 wrangler.json
+vercel.json
+.vercelignore
+netlify.toml
+
+# Directories
 functions/
 .cloudflare/
 coverage/
 build/
-.git/
-.github/
+.vercel/
+.DS_Store
+
+# Server files
+server.ts
+index.html
+public/
+
+# Only keep what's in dist/
+# Everything else should be ignored
