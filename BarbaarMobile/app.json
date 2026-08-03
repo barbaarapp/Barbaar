@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "Barbaar Wellness",
+    "slug": "react-example",
+    "owner": "barbaar-wellness",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "updates": {
+      "url": "https://u.expo.dev/1c8b6993-8965-4223-86d7-c68447c1fd10",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 30000
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.barbaar.wellness",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Barbaar Wellness requires access to your camera for secure video therapy sessions.",
+        "NSMicrophoneUsageDescription": "Barbaar Wellness requires access to your microphone for audio during therapy sessions."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#EEECE2"
+      },
+      "package": "org.barbaar.wellness",
+      "versionCode": 2,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ],
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1c8b6993-8965-4223-86d7-c68447c1fd10"
+      }
+    }
+  }
+}

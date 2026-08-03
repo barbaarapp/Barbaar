@@ -1,0 +1,139 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+        request.auth.token.email != null && 
+        request.auth.token.email.lower() == "barbaaryp@gmail.com";
+    }
+
+    function isTeamMember() {
+      return isSignedIn() && 
+        request.auth.token.email != null && (
+          request.auth.token.email.lower() == "barbaaryp@gmail.com" ||
+          exists(/databases/$(database)/documents/support_team/$(request.auth.token.email.lower()))
+        );
+    }
+
+    function isUser(email) {
+      return isSignedIn() && 
+        request.auth.token.email != null && 
+        email.lower() == request.auth.token.email.lower();
+    }
+
+    function isTherapist(therapistId) {
+      return isSignedIn() && 
+        request.auth.token.email != null && 
+        get(/databases/$(database)/documents/therapists/$(therapistId)).data.email == request.auth.token.email.lower();
+    }
+
+    function isParticipant(roomId) {
+      return isSignedIn() && (
+        isAdmin() ||
+        (
+          isUser(get(/databases/$(database)/documents/bookings/$(roomId.split('_webrtc')[0])).data.clientEmail) ||
+          isTherapist(get(/databases/$(database)/documents/bookings/$(roomId.split('_webrtc')[0])).data.therapistId)
+        )
+      );
+    }
+
+    function isValidConsultationRoom(data) {
+      return (
+        (!data.keys().hasAny(['id']) || (data.id is string && data.id.size() <= 128)) &&
+        (!data.keys().hasAny(['created']) || (data.created is string && data.created.size() <= 128)) &&
+        (!data.keys().hasAny(['notes']) || (data.notes is string && data.notes.size() <= 10000))
+      );
+    }
+
+    // 1. Therapists Collection
+    match /therapists/{therapistId} {
+      allow read, list, get: if true; // Unauthenticated users can view therapist directory
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || isUser(resource.data.email) || (isSignedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviews']));
+    }
+
+    // 2. Bookings Collection
+    match /bookings/{bookingId} {
+      allow read, list, get: if (isSignedIn() && (
+        isAdmin() ||
+        isUser(resource.data.clientEmail) ||
+        isTherapist(resource.data.therapistId)
+      )) || (!isSignedIn() && resource.data.clientEmail != null);
+      allow create: if true; // anyone can book
+      allow update: if (isSignedIn() && (
+        isAdmin() ||
+        isUser(resource.data.clientEmail) ||
+        isTherapist(resource.data.therapistId)
+      )) || (!isSignedIn() && resource.data.clientEmail != null);
+      allow delete: if isAdmin();
+    }
+
+    // 3. Messages Collection
+    match /messages/{messageId} {
+      allow read, list, get: if (isSignedIn() && (
+        isAdmin() ||
+        isUser(resource.data.clientEmail) ||
+        isTherapist(resource.data.therapistId)
+      )) || (!isSignedIn() && resource.data.clientEmail != null);
+      allow create: if true; // anyone can send a message
+      allow update: if (isSignedIn() && (
+        isAdmin() ||
+        isUser(resource.data.clientEmail) ||
+        isTherapist(resource.data.therapistId)
+      )) || (!isSignedIn() && resource.data.clientEmail != null);
+      allow delete: if isAdmin();
+    }
+
+    // 4. Content Collection
+    match /content/{contentId} {
+      allow read, get: if true; // Publicly accessible app terms, privacy, etc.
+      allow write: if isAdmin();
+    }
+
+    // 5. Users Collection
+    match /users/{userId} {
+      allow read, get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // 6. Consultation Rooms Collection
+    match /consultation_rooms/{roomId} {
+      allow read, write: if true; // Allow client & therapist to access the signaling room for WebRTC connection
+      
+      match /{allSubcollections=**} {
+        allow read, write: if true;
+      }
+    }
+
+    // 7. Support Messages Collection
+    match /support_messages/{messageId} {
+      allow read, list, get: if (isSignedIn() && (
+        isTeamMember() ||
+        isUser(resource.data.clientEmail)
+      )) || (!isSignedIn() && resource.data.clientEmail != null);
+      allow create: if true; // anyone can send a support message
+      allow update: if (isSignedIn() && (
+        isTeamMember() ||
+        isUser(resource.data.clientEmail)
+      )) || (!isSignedIn() && resource.data.clientEmail != null);
+      allow delete: if isAdmin();
+    }
+
+    // 8. Support Team Collection
+    match /support_team/{email} {
+      allow read, list, get: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

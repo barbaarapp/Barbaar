@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+.eas/
+dist/
+*.apk
+*.aab
+*.log
+android/
+ios/

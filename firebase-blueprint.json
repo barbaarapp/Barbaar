@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "Therapist": {
+      "title": "Therapist",
+      "description": "Clinical therapist profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "credentials": { "type": "string" },
+        "category": { "type": "string" },
+        "gender": { "type": "string" },
+        "languages": { "type": "array" },
+        "experience": { "type": "number" },
+        "rating": { "type": "number" },
+        "reviews": { "type": "number" },
+        "price": { "type": "number" },
+        "priceUnit": { "type": "string" },
+        "shortBio": { "type": "string" },
+        "longBio": { "type": "string" },
+        "specialties": { "type": "array" },
+        "initials": { "type": "string" },
+        "color": { "type": "string" },
+        "active": { "type": "boolean" },
+        "email": { "type": "string" },
+        "zoomLink": { "type": "string" }
+      },
+      "required": ["id", "name", "credentials", "category", "gender", "experience", "price", "active"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Session booking record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "therapistId": { "type": "string" },
+        "category": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientPhone": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "price": { "type": "number" },
+        "priceUnit": { "type": "string" },
+        "status": { "type": "string" },
+        "zoomLink": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "therapistId", "clientEmail", "date", "time", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A single communication message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "therapistId": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "from": { "type": "string" },
+        "text": { "type": "string" },
+        "time": { "type": "string" },
+        "isZoom": { "type": "boolean" }
+      },
+      "required": ["id", "therapistId", "clientEmail", "from", "text", "time"]
+    },
+    "Content": {
+      "title": "Content",
+      "description": "Static application text content",
+      "type": "object",
+      "properties": {
+        "aboutUs": { "type": "string" },
+        "terms": { "type": "string" },
+        "privacy": { "type": "string" }
+      },
+      "required": ["aboutUs", "terms", "privacy"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile with synchronization",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "email"]
+    },
+    "ConsultationRoom": {
+      "title": "ConsultationRoom",
+      "description": "Real-time consultation room data including session state, notes, chat, and WebRTC signaling",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "created": { "type": "string" },
+        "notes": { "type": "string" },
+        "chat": { "type": "array" },
+        "paths": { "type": "array" },
+        "therapistMedia": { "type": "object" },
+        "clientMedia": { "type": "object" },
+        "hostCandidateSingle": { "type": "object" },
+        "guestCandidateSingle": { "type": "object" },
+        "offer": { "type": "object" },
+        "answer": { "type": "object" }
+      }
+    },
+    "SupportMessage": {
+      "title": "SupportMessage",
+      "description": "A single direct support chat message with Barbaar admin team",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "clientEmail": { "type": "string" },
+        "clientName": { "type": "string" },
+        "from": { "type": "string" },
+        "text": { "type": "string" },
+        "time": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["id", "clientEmail", "clientName", "from", "text", "time"]
+    },
+    "SupportTeamMember": {
+      "title": "SupportTeamMember",
+      "description": "A support team member email authorized by head admin",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/therapists/{therapistId}": {
+      "schema": "Therapist",
+      "description": "Therapists database"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Session bookings"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Direct chat communications"
+    },
+    "/content/{contentId}": {
+      "schema": "Content",
+      "description": "Static terms and copy text"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/consultation_rooms/{roomId}": {
+      "schema": "ConsultationRoom",
+      "description": "Real-time session collaboration and signaling rooms"
+    },
+    "/support_messages/{messageId}": {
+      "schema": "SupportMessage",
+      "description": "Direct user support chats with the team"
+    },
+    "/support_team/{email}": {
+      "schema": "SupportTeamMember",
+      "description": "Authorized support team members who can read/respond to chats"
+    }
+  }
+}

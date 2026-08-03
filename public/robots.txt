@@ -1,0 +1,12 @@
+# Robots.txt for Barbaar Wellness
+# Culturally adapted Somali mental health counseling and therapy platform
+
+User-agent: *
+Allow: /
+
+# Exclude sensitive dynamic route paths from index if needed (optional)
+Disallow: /admin/
+Disallow: /therapist/dashboard
+
+# Reference of the Sitemap path
+Sitemap: https://app.barbaar.org/sitemap.xml

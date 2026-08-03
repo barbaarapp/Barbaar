@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Barbaar Wellness",
+    "slug": "react-example",
+    "plugins": [
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.anonymous.reactexample"
+    }
+  }
+}

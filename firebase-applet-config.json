@@ -1,0 +1,12 @@
+{
+  "projectId": "barbaar-wellness",
+  "appId": "1:5661712547:web:462a3cb7a3422c354b5f16",
+  "apiKey": "AIzaSyAuNwMZnt7iiV89vmTFJys8PECfx-US0j8",
+  "authDomain": "login.barbaar.org",
+  "firestoreDatabaseId": "ai-studio-barbaarwellness-541cbec8-9a49-4121-ae3a-f55ecbb29e77",
+  "storageBucket": "barbaar-wellness.firebasestorage.app",
+  "messagingSenderId": "5661712547",
+  "measurementId": "",
+  "oAuthClientId": "5661712547-hqr6c0tirintujq15s7nvvfr60r9cm8r.apps.googleusercontent.com",
+  "recaptchaSiteKey": ""
+}
