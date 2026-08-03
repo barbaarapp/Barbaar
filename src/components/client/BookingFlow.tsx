@@ -1023,7 +1023,7 @@ export default function BookingFlow({
 
             <Button
               full
-              variant="indigo"
+              variant="primary"
               disabled={paying}
               onClick={() => pay(finalPrice, isApprovedAid)}
               icon={paying ? Loader2 : Shield}

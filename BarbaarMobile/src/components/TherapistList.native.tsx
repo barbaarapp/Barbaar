@@ -115,7 +115,7 @@ export const TherapistList: React.FC<TherapistListProps> = ({
           </TouchableOpacity>
         )}
 
-        {/* Financial Support Card (Matching Screenshot) */}
+        {/* Financial Support Card */}
         <View style={styles.aidBannerCard}>
           <View style={styles.aidHeaderRow}>
             <View style={styles.aidSparkleBadge}>
@@ -137,114 +137,7 @@ export const TherapistList: React.FC<TherapistListProps> = ({
           </TouchableOpacity>
         </View>
 
-        {/* Your Next Session Card (If upcoming booking exists) */}
-        {upcomingBooking && (
-          <View style={styles.sectionContainer}>
-            <Text style={styles.sectionHeaderLabel}>YOUR NEXT SESSION</Text>
-            <TouchableOpacity
-              style={styles.upcomingCard}
-              onPress={onOpenUpcomingSession}
-              activeOpacity={0.85}
-            >
-              <View style={styles.upcomingAvatar}>
-                <Text style={styles.upcomingAvatarText}>
-                  {(upcomingBooking.therapistName || 'S').charAt(0)}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.upcomingName}>{upcomingBooking.therapistName}</Text>
-                <Text style={styles.upcomingMeta}>
-                  {upcomingBooking.date} · {upcomingBooking.time}
-                </Text>
-              </View>
-              <View style={styles.upcomingViewPill}>
-                <Text style={styles.upcomingViewText}>View</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Meet Our Therapists (Horizontal Side-Scrolling Carousel) */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionHeaderLabel}>MEET OUR THERAPISTS</Text>
-            <TouchableOpacity onPress={handleSeeAll} activeOpacity={0.7}>
-              <Text style={styles.seeAllText}>See All ({therapists.length})</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.carouselContainer}
-          >
-            {therapists.map((therapist) => {
-              const isLiked = savedTherapistIds.includes(therapist.id);
-              return (
-                <TouchableOpacity
-                  key={`carousel_${therapist.id}`}
-                  style={styles.carouselCard}
-                  onPress={() => setSelectedTherapist(therapist)}
-                  activeOpacity={0.88}
-                >
-                  <View style={styles.carouselCardHeader}>
-                    <View
-                      style={[
-                        styles.carouselAvatar,
-                        { backgroundColor: therapist.color || colors.amber },
-                      ]}
-                    >
-                      <Text style={styles.carouselAvatarText}>{therapist.initials}</Text>
-                    </View>
-
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.carouselDocName} numberOfLines={1}>
-                        {therapist.name}
-                      </Text>
-                      <Text style={styles.carouselCredentials} numberOfLines={1}>
-                        {therapist.credentials}
-                      </Text>
-                      <View style={styles.carouselRatingRow}>
-                        <Text style={styles.carouselRatingText}>⭐ {therapist.rating}</Text>
-                        <Text style={styles.carouselReviewsText}>({therapist.reviews})</Text>
-                      </View>
-                    </View>
-
-                    {onToggleFavorite && (
-                      <TouchableOpacity
-                        style={styles.heartBtn}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          onToggleFavorite(therapist.id);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.heartIconText}>{isLiked ? '❤️' : '🤍'}</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-
-                  <Text style={styles.carouselBio} numberOfLines={2}>
-                    {therapist.shortBio}
-                  </Text>
-
-                  <View style={styles.carouselFooterRow}>
-                    <View style={styles.carouselPriceBadge}>
-                      <Text style={styles.carouselPriceText}>${therapist.price}</Text>
-                      <Text style={styles.carouselPriceUnit}>/{therapist.priceUnit}</Text>
-                    </View>
-
-                    <View style={styles.carouselBookBtn}>
-                      <Text style={styles.carouselBookBtnText}>View & Book ›</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        {/* Or Browse By Focus Category Section */}
+        {/* Or Browse By Focus Category Section (3rd Position) */}
         <View style={styles.filterSectionHeader}>
           <Text style={styles.filterTitle}>OR BROWSE BY FOCUS</Text>
         </View>
@@ -310,82 +203,123 @@ export const TherapistList: React.FC<TherapistListProps> = ({
           />
         </View>
 
-        {/* Vertical Specialist List */}
-        <View style={styles.listContainer}>
-          {filteredTherapists.map((therapist) => {
-            const isLiked = savedTherapistIds.includes(therapist.id);
-            return (
-              <View key={therapist.id} style={styles.card}>
-                <View style={styles.cardHeader}>
-                  <View style={[styles.avatar, { backgroundColor: therapist.color || colors.amber }]}>
-                    <Text style={styles.avatarText}>{therapist.initials}</Text>
-                  </View>
+        {/* Your Next Session Card (If upcoming booking exists) */}
+        {upcomingBooking && (
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionHeaderLabel}>YOUR NEXT SESSION</Text>
+            <TouchableOpacity
+              style={styles.upcomingCard}
+              onPress={onOpenUpcomingSession}
+              activeOpacity={0.85}
+            >
+              <View style={styles.upcomingAvatar}>
+                <Text style={styles.upcomingAvatarText}>
+                  {(upcomingBooking.therapistName || 'S').charAt(0)}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.upcomingName}>{upcomingBooking.therapistName}</Text>
+                <Text style={styles.upcomingMeta}>
+                  {upcomingBooking.date} · {upcomingBooking.time}
+                </Text>
+              </View>
+              <View style={styles.upcomingViewPill}>
+                <Text style={styles.upcomingViewText}>View</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
 
-                  <View style={styles.cardInfo}>
-                    <View style={styles.nameHeartRow}>
-                      <Text style={styles.docName}>{therapist.name}</Text>
-                      {onToggleFavorite && (
-                        <TouchableOpacity
-                          style={styles.heartBtn}
-                          onPress={() => onToggleFavorite(therapist.id)}
-                          activeOpacity={0.7}
-                        >
-                          <Text style={styles.heartIconText}>{isLiked ? '❤️' : '🤍'}</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                    <Text style={styles.docCredentials}>{therapist.credentials}</Text>
-                    <View style={styles.ratingRow}>
-                      <Text style={styles.ratingText}>⭐ {therapist.rating}</Text>
-                      <Text style={styles.reviewsText}>({therapist.reviews} reviews)</Text>
-                      <Text style={styles.dot}>·</Text>
-                      <Text style={styles.expText}>{therapist.experience} yrs exp</Text>
-                    </View>
-                  </View>
+        {/* Meet Our Therapists (Featured Carousel + Specialist Cards) */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionHeaderLabel}>MEET OUR THERAPISTS</Text>
+            <TouchableOpacity onPress={handleSeeAll} activeOpacity={0.7}>
+              <Text style={styles.seeAllText}>See All ({therapists.length})</Text>
+            </TouchableOpacity>
+          </View>
 
-                  <View style={styles.priceBadge}>
-                    <Text style={styles.priceText}>
-                      ${therapist.price}
-                    </Text>
-                    <Text style={styles.unitText}>/{therapist.priceUnit}</Text>
-                  </View>
-                </View>
-
-                <Text style={styles.shortBio}>{therapist.shortBio}</Text>
-
-                {/* Specialties Tags */}
-                <View style={styles.tagsRow}>
-                  {therapist.specialties.slice(0, 3).map((spec, i) => (
-                    <View key={i} style={styles.tagChip}>
-                      <Text style={styles.tagText}>{spec}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Action Buttons */}
+          {/* Vertical Specialist List */}
+          <View style={styles.listContainer}>
+            {filteredTherapists.map((therapist) => {
+              const isLiked = savedTherapistIds.includes(therapist.id);
+              return (
                 <TouchableOpacity
-                  style={styles.bookBtn}
+                  key={therapist.id}
+                  style={styles.card}
                   onPress={() => setSelectedTherapist(therapist)}
-                  activeOpacity={0.85}
+                  activeOpacity={0.88}
                 >
-                  <Text style={styles.bookBtnText}>Book Consultation</Text>
+                  <View style={styles.cardHeader}>
+                    <View style={[styles.avatar, { backgroundColor: therapist.color || colors.amber }]}>
+                      <Text style={styles.avatarText}>{therapist.initials}</Text>
+                    </View>
+
+                    <View style={styles.cardInfo}>
+                      <View style={styles.nameHeartRow}>
+                        <Text style={styles.docName}>{therapist.name}</Text>
+                        {onToggleFavorite && (
+                          <TouchableOpacity
+                            style={styles.heartBtn}
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              onToggleFavorite(therapist.id);
+                            }}
+                            activeOpacity={0.7}
+                          >
+                            <Text style={styles.heartIconText}>{isLiked ? '❤️' : '🤍'}</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                      <Text style={styles.docCredentials}>{therapist.credentials}</Text>
+                      <View style={styles.ratingRow}>
+                        <Text style={styles.ratingText}>⭐ {therapist.rating}</Text>
+                        <Text style={styles.reviewsText}>({therapist.reviews} reviews)</Text>
+                        <Text style={styles.dot}>·</Text>
+                        <Text style={styles.expText}>{therapist.experience} yrs exp</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.priceBadge}>
+                      <Text style={styles.priceText}>
+                        ${therapist.price}
+                      </Text>
+                      <Text style={styles.unitText}>/{therapist.priceUnit}</Text>
+                    </View>
+                  </View>
+
+                  <Text style={styles.shortBio}>{therapist.shortBio}</Text>
+
+                  {/* Specialties Tags */}
+                  <View style={styles.tagsRow}>
+                    {therapist.specialties.slice(0, 3).map((spec, i) => (
+                      <View key={i} style={styles.tagChip}>
+                        <Text style={styles.tagText}>{spec}</Text>
+                      </View>
+                    ))}
+                  </View>
+
+                  {/* Action Button */}
+                  <View style={styles.bookBtn}>
+                    <Text style={styles.bookBtnText}>Book Consultation ›</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+
+            {filteredTherapists.length === 0 && (
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyIcon}>🔍</Text>
+                <Text style={styles.emptyTitle}>No specialists found</Text>
+                <Text style={styles.emptySub}>
+                  Try adjusting your search terms or category filters.
+                </Text>
+                <TouchableOpacity style={styles.resetBtn} onPress={handleSeeAll}>
+                  <Text style={styles.resetBtnText}>Clear Search & Filters</Text>
                 </TouchableOpacity>
               </View>
-            );
-          })}
-
-          {filteredTherapists.length === 0 && (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyIcon}>🔍</Text>
-              <Text style={styles.emptyTitle}>No specialists found</Text>
-              <Text style={styles.emptySub}>
-                Try adjusting your search terms or category filters.
-              </Text>
-              <TouchableOpacity style={styles.resetBtn} onPress={handleSeeAll}>
-                <Text style={styles.resetBtnText}>Clear Search & Filters</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+            )}
+          </View>
         </View>
 
         {/* Impact Stats Banner */}
@@ -406,6 +340,50 @@ export const TherapistList: React.FC<TherapistListProps> = ({
             <Text style={styles.statNumber}>100%</Text>
             <Text style={styles.statLabel}>Confidential</Text>
             <Text style={styles.statSub}>HIPAA Compliant</Text>
+          </View>
+        </View>
+
+        {/* Why Therapy Matters Section */}
+        <View style={styles.whyTherapyCard}>
+          <View style={styles.whyHeaderRow}>
+            <View style={styles.whyAccentBar} />
+            <Text style={styles.whyTitle}>WHY THERAPY MATTERS</Text>
+          </View>
+
+          <View style={styles.pillarItem}>
+            <View style={styles.pillarIconCircle}>
+              <Text style={styles.pillarIconEmoji}>🌿</Text>
+            </View>
+            <View style={styles.pillarContent}>
+              <Text style={styles.pillarHeading}>Navigate Stress & Life Transitions</Text>
+              <Text style={styles.pillarDesc}>
+                Gain effective coping mechanisms for anxiety, relationship changes, and career transitions with culturally empathetic therapists.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.pillarItem}>
+            <View style={styles.pillarIconCircle}>
+              <Text style={styles.pillarIconEmoji}>🌱</Text>
+            </View>
+            <View style={styles.pillarContent}>
+              <Text style={styles.pillarHeading}>Build Daily Resilience & Habits</Text>
+              <Text style={styles.pillarDesc}>
+                Develop actionable strategies and self-care routines that promote lasting mental well-being and growth.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.pillarItem}>
+            <View style={styles.pillarIconCircle}>
+              <Text style={styles.pillarIconEmoji}>🛡️</Text>
+            </View>
+            <View style={styles.pillarContent}>
+              <Text style={styles.pillarHeading}>Confidential & Culturally Aware</Text>
+              <Text style={styles.pillarDesc}>
+                Experience private, non-judgmental care tailored specifically for Somali youth and global diaspora communities.
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -1007,5 +985,64 @@ const styles = StyleSheet.create({
     width: 1,
     height: 30,
     backgroundColor: '#EAE8DF',
+  },
+  whyTherapyCard: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    marginBottom: 24,
+    backgroundColor: '#FAFAF7',
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: '#EAE8DF',
+  },
+  whyHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  whyAccentBar: {
+    width: 4,
+    height: 16,
+    backgroundColor: '#64A461',
+    borderRadius: 2,
+  },
+  whyTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.ink,
+    letterSpacing: 0.8,
+  },
+  pillarItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 14,
+  },
+  pillarIconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#EBF5EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pillarIconEmoji: {
+    fontSize: 18,
+  },
+  pillarContent: {
+    flex: 1,
+  },
+  pillarHeading: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: colors.ink,
+    marginBottom: 2,
+  },
+  pillarDesc: {
+    fontSize: 11.5,
+    color: colors.inkSoft,
+    lineHeight: 16,
   },
 });

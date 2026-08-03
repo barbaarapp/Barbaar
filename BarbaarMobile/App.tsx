@@ -33,6 +33,7 @@ import { ConsultationRoomNative } from './src/components/ConsultationRoom.native
 import { QuizModal } from './src/components/QuizModal.native';
 
 import { FinancialAidModal } from './src/components/FinancialAidModal.native';
+import { AuthModal } from './src/components/AuthModal.native';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'therapists' | 'sessions' | 'messages' | 'profile'>('therapists');
@@ -41,6 +42,7 @@ export default function App() {
   const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [quizVisible, setQuizVisible] = useState<boolean>(false);
   const [aidModalVisible, setAidModalVisible] = useState<boolean>(false);
+  const [authModalVisible, setAuthModalVisible] = useState<boolean>(false);
   const [savedTherapistIds, setSavedTherapistIds] = useState<string[]>(['t1', 't2']);
   const [clientProfile, setClientProfile] = useState<ClientProfile>({
     name: 'Farhiya Ali',
@@ -171,6 +173,13 @@ export default function App() {
     nativeStorageService.saveClientProfile(updated);
   };
 
+  const handleUpdateUser = (updatedUser: UserProfile, updatedClient: ClientProfile) => {
+    setCurrentUser(updatedUser);
+    setClientProfile(updatedClient);
+    nativeStorageService.saveUserProfile(updatedUser);
+    nativeStorageService.saveClientProfile(updatedClient);
+  };
+
   const handleJoinSession = (session: BookingSession) => {
     setActiveSession(session);
     setInConsultationRoom(true);
@@ -248,6 +257,7 @@ export default function App() {
             onToggleRole={handleToggleRole}
             savedTherapistIds={savedTherapistIds}
             completedSessionsCount={bookings.filter((b) => b.status === 'completed').length}
+            onOpenAuthModal={() => setAuthModalVisible(true)}
           />
         )}
       </View>
@@ -285,9 +295,24 @@ export default function App() {
           onPress={() => setActiveTab('messages')}
           activeOpacity={0.8}
         >
-          <Text style={[styles.tabIcon, activeTab === 'messages' && styles.tabIconActive]}>
-            💬
-          </Text>
+          <View style={{ position: 'relative' }}>
+            <Text style={[styles.tabIcon, activeTab === 'messages' && styles.tabIconActive]}>
+              💬
+            </Text>
+            {Object.values(messages).some((list) => list.some((m) => m.sender === 'therapist' && !m.read)) && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  right: -4,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: colors.amber,
+                }}
+              />
+            )}
+          </View>
           <Text style={[styles.tabLabel, activeTab === 'messages' && styles.tabLabelActive]}>
             Messages
           </Text>
@@ -323,6 +348,15 @@ export default function App() {
         onSelectTherapist={(therapist) => {
           // Booking flow will handle selected therapist
         }}
+      />
+
+      {/* Auth Modal for Google & Email Sign In */}
+      <AuthModal
+        visible={authModalVisible}
+        onClose={() => setAuthModalVisible(false)}
+        currentUser={currentUser}
+        clientProfile={clientProfile}
+        onUpdateUser={handleUpdateUser}
       />
     </SafeAreaView>
   );

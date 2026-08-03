@@ -21,6 +21,7 @@ interface ProfileViewProps {
   onToggleRole: () => void;
   savedTherapistIds?: string[];
   completedSessionsCount?: number;
+  onOpenAuthModal?: () => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -30,6 +31,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onToggleRole,
   savedTherapistIds = [],
   completedSessionsCount = 0,
+  onOpenAuthModal,
 }) => {
   const [name, setName] = useState(clientProfile.name || currentUser.fullName || '');
   const [email, setEmail] = useState(clientProfile.email || currentUser.email || '');
@@ -341,11 +343,24 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         <Text style={styles.userName}>{name || 'Barbaar Patient'}</Text>
         <Text style={styles.userEmail}>{email || 'patient@barbaar.org'}</Text>
 
-        <TouchableOpacity style={styles.roleBtn} onPress={onToggleRole}>
-          <Text style={styles.roleBtnText}>
-            Active Role: {currentUser.role.toUpperCase()} (Tap to Switch)
-          </Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+          <TouchableOpacity style={styles.roleBtn} onPress={onToggleRole}>
+            <Text style={styles.roleBtnText}>
+              Role: {currentUser.role.toUpperCase()} 🔄
+            </Text>
+          </TouchableOpacity>
+
+          {onOpenAuthModal && (
+            <TouchableOpacity
+              style={[styles.roleBtn, { backgroundColor: colors.amber }]}
+              onPress={onOpenAuthModal}
+            >
+              <Text style={[styles.roleBtnText, { color: '#ffffff' }]}>
+                🔐 Sign In / Google
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Dashboard Quick Stats */}
