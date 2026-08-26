@@ -20,7 +20,6 @@ import SessionsScreen from "./SessionsScreen";
 import ChatScreen from "./ChatScreen";
 import SettingsScreen from "./SettingsScreen";
 import LegalScreen from "./LegalScreen";
-import ClientNav from "../layout/ClientNav";
 import Wordmark from "../ui/Wordmark";
 import LoginModal from "../shared/LoginModal";
 import HeaderMenu from "../layout/HeaderMenu";
@@ -421,10 +420,6 @@ export default function ClientApp({
   }
 
   const selectedTherapist = translatedTherapists.find((t) => t.id === selectedId);
-  const hasActiveInteractions = bookings.length > 0 || hasAnyUnread || !!currentUser;
-  const showNav = (screen !== "home" || hasActiveInteractions) && 
-    !["profile", "booking", "quiz", "match", "confirmation"].includes(screen) && 
-    !(screen === "chat" && selectedId !== null);
 
   return (
     <div
@@ -432,23 +427,90 @@ export default function ClientApp({
       style={{
         background: "#faf9f6",
         minHeight: "100vh",
-        paddingBottom: showNav ? 90 : 0,
-        transition: "padding-bottom 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
     >
       {/* Premium Minimalist Header Navigation (Universal Desktop & Mobile) */}
       <header className="sticky top-0 w-full backdrop-blur-md border-b border-stone-200/80 z-40 bg-[#faf9f6]/95 shadow-2xs">
-        <div className="max-w-5xl mx-auto px-4 sm:px-8 h-15 sm:h-16 flex items-center justify-between">
-          <button onClick={() => go("home")} className="cursor-pointer transition-transform hover:scale-[1.02]">
-            <Wordmark size={18} />
-          </button>
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <button onClick={() => go("home")} className="cursor-pointer transition-transform hover:scale-[1.02] flex items-center gap-2">
+              <Wordmark size={18} />
+            </button>
+
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center gap-5 text-xs font-semibold text-stone-600">
+              <button
+                onClick={() => go("directory")}
+                className={`py-1.5 px-2 hover:text-[#1e3a2f] transition-colors cursor-pointer rounded-lg ${
+                  screen === "directory" ? "text-[#1e3a2f] font-bold bg-[#1e3a2f]/5" : ""
+                }`}
+              >
+                {lang === "so" ? "Dhakhaatiirta" : "Specialists"}
+              </button>
+
+              <button
+                onClick={() => {
+                  if (screen !== "home") go("home");
+                  setTimeout(() => {
+                    window.scrollTo({ top: 750, behavior: "smooth" });
+                  }, 100);
+                }}
+                className="py-1.5 px-2 hover:text-[#1e3a2f] transition-colors cursor-pointer rounded-lg"
+              >
+                {lang === "so" ? "Sida ay u Shaqeyso" : "How It Works"}
+              </button>
+
+              <button
+                onClick={() => openLegalPage("about")}
+                className={`py-1.5 px-2 hover:text-[#1e3a2f] transition-colors cursor-pointer rounded-lg ${
+                  settingsSub === "about" ? "text-[#1e3a2f] font-bold bg-[#1e3a2f]/5" : ""
+                }`}
+              >
+                {lang === "so" ? "Ku Saabsan" : "About"}
+              </button>
+
+              {/* Patient portal links if user has bookings or is signed in */}
+              {(bookings.length > 0 || !!currentUser) && (
+                <>
+                  <span className="text-stone-300 select-none">|</span>
+                  <button
+                    onClick={() => go("sessions")}
+                    className={`py-1.5 px-2 hover:text-[#1e3a2f] transition-colors flex items-center gap-1.5 cursor-pointer rounded-lg ${
+                      screen === "sessions" ? "text-[#1e3a2f] font-bold bg-[#1e3a2f]/5" : ""
+                    }`}
+                  >
+                    <CalendarDays size={14} className="text-emerald-800" />
+                    <span>{lang === "so" ? "Kulamada" : "Sessions"}</span>
+                    {bookings.length > 0 && (
+                      <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-bold">
+                        {bookings.length}
+                      </span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => go("chat")}
+                    className={`py-1.5 px-2 hover:text-[#1e3a2f] transition-colors flex items-center gap-1.5 cursor-pointer rounded-lg ${
+                      screen === "chat" ? "text-[#1e3a2f] font-bold bg-[#1e3a2f]/5" : ""
+                    }`}
+                  >
+                    <MessageCircle size={14} className="text-emerald-800" />
+                    <span>{lang === "so" ? "Farriimaha" : "Messages"}</span>
+                    {hasAnyUnread && (
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </button>
+                </>
+              )}
+            </nav>
+          </div>
           
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Language Switcher Pill */}
             <button
               type="button"
               onClick={toggleLanguage}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-stone-200 hover:border-stone-400 bg-white text-xs font-bold text-stone-700 transition-colors shadow-2xs cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-stone-200 hover:border-stone-400 bg-white text-xs font-bold text-stone-700 transition-colors shadow-2xs cursor-pointer"
             >
               <Globe size={13} className="text-stone-500" />
               <span>{lang === "so" ? "English" : "Soomaali"}</span>
@@ -459,17 +521,17 @@ export default function ClientApp({
               onClick={() => startQuiz()}
               className="hidden sm:flex px-4 py-2 text-xs font-bold text-white bg-[#1e3a2f] hover:bg-[#14261f] transition-all rounded-full shadow-sm hover:shadow-md cursor-pointer items-center gap-1.5"
             >
-              <span>{lang === "so" ? "Biloow Hadda" : "Get started"}</span>
+              <span>{lang === "so" ? "Biloow Hadda" : "Get Started"}</span>
               <ArrowRight size={13} />
             </button>
 
             {/* Clean Unified Menu Trigger Button */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-stone-400"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-100 text-stone-800 text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-stone-400"
               aria-label="Open navigation menu"
             >
-              <Menu size={15} className="text-stone-700" />
+              <Menu size={16} className="text-stone-700" />
               <span className="font-bold">{lang === "so" ? "Liiska" : "Menu"}</span>
               {hasAnyUnread && (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -656,40 +718,6 @@ export default function ClientApp({
             </div>
           )}
         </motion.div>
-      </AnimatePresence>
-
-      {/* Persistent Bottom Nav Bar with dynamic slide-down animation */}
-      <AnimatePresence>
-        {showNav && (
-          <motion.div
-            className="md:hidden"
-            initial={{ y: 90, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 90, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            style={{
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: "100%",
-              maxWidth: "36rem", // max-w-xl (576px)
-              zIndex: 30,
-            }}
-          >
-            <ClientNav
-              screen={screen}
-              go={(k) => {
-                setSettingsSub(null);
-                go(k);
-              }}
-              hasUnread={hasAnyUnread}
-              lang={lang}
-            />
-          </motion.div>
-        )}
       </AnimatePresence>
 
       {/* Global Quick Login & Access Modal */}
