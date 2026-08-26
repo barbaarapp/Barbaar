@@ -23,7 +23,8 @@ import LegalScreen from "./LegalScreen";
 import ClientNav from "../layout/ClientNav";
 import Wordmark from "../ui/Wordmark";
 import LoginModal from "../shared/LoginModal";
-import { Home, CalendarDays, MessageCircle, User as UserIcon, Globe, LogIn, Sparkles, ArrowRight } from "lucide-react";
+import HeaderMenu from "../layout/HeaderMenu";
+import { Home, CalendarDays, MessageCircle, User as UserIcon, Globe, LogIn, Sparkles, ArrowRight, Menu } from "lucide-react";
 
 import { User } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -192,6 +193,7 @@ export default function ClientApp({
   }
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   function toggleLanguage() {
     const nextLang: Language = lang === "so" ? "en" : "so";
@@ -434,116 +436,44 @@ export default function ClientApp({
         transition: "padding-bottom 0.28s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
     >
-      {/* Premium Minimalist Desktop Header Navigation (BetterHelp Style) */}
-      <header className="hidden md:block sticky top-0 w-full backdrop-blur-md border-b border-stone-200/80 z-50 bg-[#faf9f6]/95 shadow-2xs">
-        <div className="max-w-5xl mx-auto px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <button onClick={() => go("home")} className="cursor-pointer transition-transform hover:scale-[1.02]">
-              <Wordmark size={18} />
-            </button>
-            <nav className="flex items-center gap-6 text-xs font-semibold text-stone-600">
-              <button
-                onClick={() => go("directory")}
-                className={`py-2 px-1 hover:text-[#1e3a2f] transition-colors cursor-pointer ${
-                  screen === "directory" ? "text-[#1e3a2f] font-bold" : ""
-                }`}
-              >
-                {lang === "so" ? "Dhakhaatiirta" : "Specialists"}
-              </button>
-              
-              <button
-                onClick={() => {
-                  if (screen !== "home") go("home");
-                  setTimeout(() => {
-                    window.scrollTo({ top: 900, behavior: "smooth" });
-                  }, 100);
-                }}
-                className="py-2 px-1 hover:text-[#1e3a2f] transition-colors cursor-pointer"
-              >
-                {lang === "so" ? "Sida ay u shaqeyso" : "How It Works"}
-              </button>
-
-              <button
-                onClick={() => openLegalPage("about")}
-                className={`py-2 px-1 hover:text-[#1e3a2f] transition-colors cursor-pointer ${
-                  settingsSub === "about" ? "text-[#1e3a2f] font-bold" : ""
-                }`}
-              >
-                {lang === "so" ? "Ku Saabsan" : "About"}
-              </button>
-
-              {/* Patient portal links if they have history or are logged in */}
-              {(bookings.length > 0 || !!currentUser) && (
-                <>
-                  <span className="text-stone-300 select-none">|</span>
-                  <button
-                    onClick={() => go("sessions")}
-                    className={`py-2 px-1 hover:text-[#1e3a2f] transition-colors flex items-center gap-1.5 cursor-pointer ${
-                      screen === "sessions" ? "text-[#1e3a2f] font-bold" : ""
-                    }`}
-                  >
-                    <CalendarDays size={14} />
-                    <span>{lang === "so" ? "Kulamada" : "Sessions"}</span>
-                  </button>
-                  <button
-                    onClick={() => go("chat")}
-                    className={`relative py-2 px-1 hover:text-[#1e3a2f] transition-colors flex items-center gap-1.5 cursor-pointer ${
-                      screen === "chat" ? "text-[#1e3a2f] font-bold" : ""
-                    }`}
-                  >
-                    <MessageCircle size={14} />
-                    <span>{lang === "so" ? "Farriimaha" : "Messages"}</span>
-                    {hasAnyUnread && (
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    )}
-                  </button>
-                </>
-              )}
-            </nav>
-          </div>
+      {/* Premium Minimalist Header Navigation (Universal Desktop & Mobile) */}
+      <header className="sticky top-0 w-full backdrop-blur-md border-b border-stone-200/80 z-40 bg-[#faf9f6]/95 shadow-2xs">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 h-15 sm:h-16 flex items-center justify-between">
+          <button onClick={() => go("home")} className="cursor-pointer transition-transform hover:scale-[1.02]">
+            <Wordmark size={18} />
+          </button>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Language Switcher Pill */}
             <button
               type="button"
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 hover:border-stone-400 bg-white text-xs font-bold text-stone-700 transition-colors shadow-2xs cursor-pointer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-stone-200 hover:border-stone-400 bg-white text-xs font-bold text-stone-700 transition-colors shadow-2xs cursor-pointer"
             >
               <Globe size={13} className="text-stone-500" />
               <span>{lang === "so" ? "English" : "Soomaali"}</span>
             </button>
 
-            {/* Login / Profile CTA */}
-            <button
-              onClick={() => {
-                if (currentUser) {
-                  go("settings");
-                } else {
-                  setIsLoginModalOpen(true);
-                }
-              }}
-              className="px-4 py-2 text-xs font-bold text-stone-800 hover:text-black hover:bg-stone-100 transition-colors rounded-full cursor-pointer flex items-center gap-1.5"
-            >
-              {currentUser ? (
-                <>
-                  <UserIcon size={14} />
-                  <span>{clientProfile.name ? clientProfile.name.split(" ")[0] : (lang === "so" ? "Koontadayda" : "Account")}</span>
-                </>
-              ) : (
-                <>
-                  <LogIn size={14} />
-                  <span>{lang === "so" ? "Gal" : "Log in"}</span>
-                </>
-              )}
-            </button>
-
-            {/* Get Started Button */}
+            {/* Quick Get Started Button (Desktop & Tablet) */}
             <button
               onClick={() => startQuiz()}
-              className="px-5 py-2 text-xs font-bold text-white bg-[#1e3a2f] hover:bg-[#14261f] transition-all rounded-full shadow-sm hover:shadow-md cursor-pointer flex items-center gap-1.5"
+              className="hidden sm:flex px-4 py-2 text-xs font-bold text-white bg-[#1e3a2f] hover:bg-[#14261f] transition-all rounded-full shadow-sm hover:shadow-md cursor-pointer items-center gap-1.5"
             >
               <span>{lang === "so" ? "Biloow Hadda" : "Get started"}</span>
               <ArrowRight size={13} />
+            </button>
+
+            {/* Clean Unified Menu Trigger Button */}
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold transition-all shadow-2xs cursor-pointer hover:border-stone-400"
+              aria-label="Open navigation menu"
+            >
+              <Menu size={15} className="text-stone-700" />
+              <span className="font-bold">{lang === "so" ? "Liiska" : "Menu"}</span>
+              {hasAnyUnread && (
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              )}
             </button>
           </div>
         </div>
@@ -578,6 +508,7 @@ export default function ClientApp({
               onOpenLegalPage={openLegalPage}
               setClientProfile={setClientProfile}
               onOpenLoginModal={() => setIsLoginModalOpen(true)}
+              onOpenMenu={() => setIsMenuOpen(true)}
             />
           ) : screen === "chat" ? (
             <ChatScreen
@@ -772,6 +703,30 @@ export default function ClientApp({
           setIsLoginModalOpen(false);
           go("sessions");
         }}
+      />
+
+      {/* Global Minimalist Navigation Drawer Menu */}
+      <HeaderMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        lang={lang}
+        onToggleLanguage={toggleLanguage}
+        onNavigate={(s, p) => go(s, p)}
+        onStartQuiz={startQuiz}
+        onOpenLegalPage={openLegalPage}
+        onOpenLoginModal={() => {
+          setIsMenuOpen(false);
+          setIsLoginModalOpen(true);
+        }}
+        currentUser={currentUser}
+        clientProfile={clientProfile}
+        bookings={bookings}
+        hasUnreadMessages={hasAnyUnread}
+        onLogout={() => {
+          if (onSignOut) onSignOut();
+        }}
+        onEnterTherapistMode={enterTherapistMode}
+        onEnterAdminMode={enterAdminMode}
       />
     </div>
   );

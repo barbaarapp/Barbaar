@@ -4,14 +4,12 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, ArrowLeft, Sparkles, RotateCcw, ArrowRight } from "lucide-react";
 import { Therapist } from "../../types";
-import { CATEGORIES, colors } from "../../constants";
+import { CATEGORIES } from "../../constants";
 import { translateText as t, Language } from "../../utils/translations";
-import TopBar from "../ui/TopBar";
-import GrowthArc from "../ui/GrowthArc";
-import Button from "../ui/Button";
-import TherapistRow from "./TherapistRow";
+import { TherapistCard } from "./TherapistCard";
+import { motion } from "motion/react";
 
 interface MatchResultsProps {
   matched: Therapist[];
@@ -36,7 +34,7 @@ export default function MatchResults({
 
   useEffect(() => {
     const t1 = setTimeout(() => setReveal(1), 250);
-    const t2 = setTimeout(() => setReveal(2), 1000);
+    const t2 = setTimeout(() => setReveal(2), 800);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -46,91 +44,98 @@ export default function MatchResults({
   const cat = CATEGORIES[category] || CATEGORIES.cbt;
 
   return (
-    <div>
-      <TopBar title={t("Your match", lang)} onBack={onBack} />
-      <div style={{ padding: "32px 22px", textAlign: "center" }}>
-        <GrowthArc value={reveal >= 1 ? 100 : 8} size={84} stroke={7} color={cat.color}>
-          {reveal >= 1 ? (
-            <CheckCircle2 size={30} color={cat.color} className="pop-in" />
-          ) : (
-            <Loader2
-              size={24}
-              color={cat.color}
-              style={{ animation: "spin 1s linear infinite" }}
-            />
-          )}
-        </GrowthArc>
-        {reveal < 1 && (
-          <div style={{ marginTop: 14, fontSize: 14, color: colors.indigoSoft }}>
-            {t("Finding your match…", lang)}
-          </div>
-        )}
-        {reveal >= 1 && (
-          <div className="fade-up">
-            <div
-              className="font-display"
-              style={{
-                fontSize: 21,
-                fontWeight: 600,
-                marginTop: 16,
-                color: colors.ink,
-              }}
-            >
-              {t(cat.name, lang)} {t("feels right for you", lang)}
-            </div>
-            <div style={{ fontSize: 14, color: colors.inkSoft, marginTop: 4 }}>
-              {t(cat.short, lang)}
-            </div>
-          </div>
-        )}
+    <div className="w-full min-h-screen bg-[#faf9f6] text-[#1a2f25] pb-20">
+      {/* Navigation Top Header */}
+      <div className="sticky top-0 z-40 bg-[#faf9f6]/95 backdrop-blur-md border-b border-stone-200/80 px-4 py-3 sm:py-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <button
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-stone-700 hover:text-black transition-colors cursor-pointer"
+          >
+            <ArrowLeft size={16} />
+            <span>{lang === "so" ? "Dib u noqo" : "Back"}</span>
+          </button>
+
+          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
+            {lang === "so" ? "Natiijada Xulashada" : "Matching Complete"}
+          </span>
+
+          <button
+            onClick={onRetake}
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#1e3a2f] hover:underline cursor-pointer"
+          >
+            <RotateCcw size={13} />
+            <span>{lang === "so" ? "Ku celi" : "Retake"}</span>
+          </button>
+        </div>
       </div>
 
-      {reveal >= 2 && (
-        <div className="fade-up" style={{ padding: "0 20px" }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: colors.inkSoft,
-              textTransform: "uppercase",
-              letterSpacing: 0.4,
-              marginBottom: 10,
-            }}
-          >
-            {t("Recommended for you", lang)}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10">
+        {/* Loading / Matched Announcement */}
+        <div className="text-center max-w-xl mx-auto mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-800 mb-4 border border-emerald-200/60 shadow-2xs">
+            {reveal >= 1 ? (
+              <CheckCircle2 size={28} className="text-emerald-700 animate-in zoom-in-75 duration-300" />
+            ) : (
+              <Loader2 size={24} className="animate-spin text-emerald-700" />
+            )}
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22 }}>
-            {matched.map((tItem, index) => (
-              <TherapistRow key={tItem.id} t={tItem} onClick={() => onSelect(tItem.id)} badge={index === 0 ? t("Best Match", lang) : undefined} />
-            ))}
-          </div>
-          <Button full variant="ghost" onClick={onBrowseAll}>
-            {t("Browse everyone instead", lang)}
-          </Button>
-          <div style={{ textAlign: "center", marginTop: 14 }}>
-            <button
-              onClick={onRetake}
-              style={{
-                background: "none",
-                border: "none",
-                color: colors.indigo,
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
-            >
-              {t("Retake the quiz", lang)}
-            </button>
-          </div>
-        </div>
-      )}
 
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+          {reveal < 1 ? (
+            <h2 className="text-lg sm:text-xl font-bold text-stone-600">
+              {lang === "so" ? "Waxaan kuu raadineynaa dhakhtarka kugu habboon..." : "Finding your ideal therapist match..."}
+            </h2>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="text-xs font-bold uppercase tracking-wider text-[#4e8a5b] mb-1">
+                {lang === "so" ? "Khabiirka Kuugu Habboon" : "Personalized Recommendation"}
+              </div>
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#1a2f25]">
+                {t(cat.name, lang)} {lang === "so" ? "ayaa kuugu habboon" : "is your best fit"}
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-500 mt-1">
+                {t(cat.short, lang)}
+              </p>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Matched Specialist Cards */}
+        {reveal >= 2 && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {matched.map((th) => (
+                <TherapistCard
+                  key={th.id}
+                  t={th}
+                  onClick={() => onSelect(th.id)}
+                  lang={lang}
+                />
+              ))}
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
+              <button
+                onClick={onBrowseAll}
+                className="w-full sm:w-auto px-6 py-3 rounded-full border border-stone-300 hover:border-stone-500 bg-white text-stone-800 font-bold text-xs shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>{lang === "so" ? "Eeg Dhammaan Dhakhaatiirta Kale" : "Browse All Specialists Instead"}</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }
