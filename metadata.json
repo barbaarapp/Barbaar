@@ -1,0 +1,6 @@
+{
+  "name": "Barbaar Wellness",
+  "description": "A modular, scalable, and beautifully designed therapy platform connecting the Somali community with licensed practitioners.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

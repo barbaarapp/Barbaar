@@ -1,0 +1,21 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/send-booking",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/send-booking.ts:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/sifalo-pay",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/sifalo-pay.ts:onRequestPost"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}
